@@ -7,12 +7,13 @@ import { addKeyObserver, removeKeyObserver } from './../util/keyboard';
  * @param {array} tileList 타일 리스트
  * @param {function} setTileList 상태 변경 핸들러
  */
-export default function useMoveTile(tileList, setTileList, setScore) {
+export default function useMoveTile(tileList, setTileList, setScore, setUpdateScore) {
   useEffect(() => {
     function moveAndAdd({ x, y }) {
       const newTileList = moveTile({ tileList, x, y });
       // 점수 변경
       const score = newTileList.reduce((acc, item) => (item.isMerged ? acc + item.value : acc), 0);
+      setUpdateScore(score);
       setScore((val) => val + score);
       const newTile = makeTile(newTileList);
       newTile.isNew = true;

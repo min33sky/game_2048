@@ -7,6 +7,7 @@ import { useLocalStorageNumber } from './hook/useLocalStorageNumber';
 
 function App() {
   const [score, setScore] = useState(0);
+  const [updateScore, setUpdateScore] = useState(0);
   const [bestScore, setBestScore] = useLocalStorageNumber('bestScore', 0);
 
   useEffect(() => {
@@ -17,9 +18,9 @@ function App() {
 
   return (
     <div className='container'>
-      <Header score={score} bestScore={bestScore} />
+      <Header score={score} bestScore={bestScore} updateScore={updateScore} />
       <AboveGame />
-      <Game setScore={setScore} />
+      <Game setScore={setScore} setUpdateScore={setUpdateScore} />
     </div>
   );
 }
