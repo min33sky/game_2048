@@ -1,9 +1,8 @@
 import { MAX_POS } from '../constants';
 import { getRandomInteger } from './number';
+import { assert } from './assert';
 
 /**
-import { getRandomInteger } from './number';
-import { MAX_POS } from './../constants';
  * 타일 리스트 초기화 함수
  */
 export function getInitialTileList() {
@@ -17,36 +16,44 @@ export function getInitialTileList() {
 
 /**
  * 좌표 충돌 체크
- * @param {*} tileList
- * @param {*} tile
+ * @param {*} tileList 타일리스트
+ * @param {*} tile 타일
  */
 function checkCollision(tileList, tile) {
   return tileList.some((item) => item.x === tile.x && item.y === tile.y);
 }
 
-let tileId = 0;
+let currentId = 0;
 
 /**
  * 타일 생성 함수
- * @param {*} tileList
+ * @param {*} tileList  타일 리스트
  */
 export function makeTile(tileList) {
   let tile;
-  while (!tile || checkCollision(tileList, tile)) {
+  // 타일이 없거나 기존 타일 위치와 충돌 할 시 타일을 새로 만든다.
+  while (!tile || (tileList && checkCollision(tileList, tile))) {
     tile = {
-      id: tileId++,
+      id: currentId++,
       x: getRandomInteger(1, MAX_POS),
       y: getRandomInteger(1, MAX_POS),
       value: 2,
+      isNew: undefined,
+      isMerged: undefined,
     };
   }
   return tile;
 }
 
+/**
+ * 타일 이동 함수
+ * @param {object} param0 타일리스트와 타일의 x, y좌표
+ */
 export function moveTile({ tileList, x, y }) {
-  // assert(x === 0 || y === 0, '');
+  assert(x === 0 || y === 0, ''); //! 대각선 이동은 안된다.
   const isMoveY = y !== 0;
   const isMinus = x + y < 0;
+
   const sorted = tileList
     .map((item) => ({ ...item, isMerged: false, isNew: false }))
     .filter((item) => !item.isDisabled)
@@ -62,8 +69,10 @@ export function moveTile({ tileList, x, y }) {
         }
       }
     });
+
   const initialPos = isMinus ? 1 : MAX_POS;
   let pos = initialPos;
+
   for (let i = 0; i < sorted.length; i++) {
     if (isMoveY) {
       sorted[i].y = pos;
@@ -122,5 +131,6 @@ export function moveTile({ tileList, x, y }) {
       }
     }
   }
+
   return newTileList;
 }
