@@ -1,33 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
+import ScoreAddtion from './ScoreAddtion';
 
 function Header({ score, bestScore, updateScore }) {
-  // const [prevScore, setPrevScore] = useState(score);
-  const [update, setUpdate] = useState(false);
+  const prevScore = useRef(0);
 
+  /**
+   *? 이전 점수와 현재 점수가 다를 때만 업데이트 효과를 준다.
+   */
   useEffect(() => {
-    function check() {
-      return new Promise((resolve, reject) => {
-        if (updateScore > 0) {
-          resolve('update');
-        } else {
-          reject('failure');
-        }
-      });
-    }
-
-    const process = async () => {
-      try {
-        setUpdate(false);
-        const result = await check();
-        console.log('result', result);
-        setUpdate(true);
-      } catch (error) {
-        setUpdate(false);
-      }
-    };
-
-    process();
-  }, [updateScore]);
+    prevScore.current = score;
+  });
 
   return (
     <div>
@@ -36,7 +18,7 @@ function Header({ score, bestScore, updateScore }) {
         <div className='scores-container'>
           <div className='score-container'>
             {score}
-            {update ? <div className='score-addition'>+{updateScore}</div> : ''}
+            {prevScore.current !== score && <ScoreAddtion updateScore={updateScore} />}
           </div>
           <div className='best-container'>{bestScore}</div>
         </div>
